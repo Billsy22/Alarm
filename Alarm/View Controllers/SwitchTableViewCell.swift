@@ -8,17 +8,44 @@
 
 import UIKit
 
+// MARK: -  Delegate Protocol
+
+protocol SwitchTableViewCellDelegate: class {
+    func switchCellSwitchValueChanged(cell: SwitchTableViewCell)
+}
+
+// MARK: -  Class
+
 class SwitchTableViewCell: UITableViewCell {
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    
+    // MARK: -  Properties
+    
+    var alarm: Alarm? {
+        didSet {
+            updateViews()
+        }
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    
+    weak var delegate: SwitchTableViewCellDelegate?
+    
+    @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var alarmSwitch: UISwitch!
+    
+    // MARK: -  Actions
+    
+    @IBAction func switchValueChanged(_ sender: UISwitch) {
+        if let delegate = delegate {
+            delegate.switchCellSwitchValueChanged(cell: self)
+        }
     }
-
+    
+    // MARK: -  Update Views
+    
+    func updateViews() {
+        guard let alarm = alarm else { return }
+        timeLabel.text = alarm.fireTimeAsString
+        nameLabel.text = alarm.name
+        alarmSwitch.isOn = alarm.enabled
+    }
 }
